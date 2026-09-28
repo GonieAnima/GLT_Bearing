@@ -9,5 +9,5 @@
 	"runOnStartup":	false,
 	"supportedOS":	"windows|mac",
 	"editEnabled":	true,
-	"iconFilename":	"GTL_bearing.svg"
+	"iconFilename":	"AddInIcon.svg"
 }

@@ -1,12 +1,13 @@
 {
 	"autodeskProduct":	"Fusion",
-	"type":	"script",
+	"type":	"addin",
 	"author":	"Gonie",
 	"description":	{
-		"":	""
+		"":	"Generates a bearing based on parameters inputed."
 	},
 	"version":	"",
+	"runOnStartup":	false,
 	"supportedOS":	"windows|mac",
 	"editEnabled":	true,
-	"iconFilename":	"logoScript.svg"
+	"iconFilename":	"AddInIcon.svg"
 }

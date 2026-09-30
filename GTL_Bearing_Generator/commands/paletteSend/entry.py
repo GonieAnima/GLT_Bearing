@@ -96,6 +96,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 
     # To create a numerical input with units, we need to get the current units and create a "ValueInput"
     # https://help.autodesk.com/view/fusion360/ENU/?contextId=ValueInput
+    
     users_current_units = app.activeProduct.unitsManager.defaultLengthUnits
     default_value = adsk.core.ValueInput.createByString(f'1 {users_current_units}')
     inputs.addValueInput('value_input', 'Value Message', users_current_units, default_value)
@@ -103,7 +104,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 
 # This function will be called when the user hits the OK button in the command dialog
 def command_execute(args: adsk.core.CommandEventArgs):
-    # General logging for debug
+    # General logging for debugsssssssrodsssssadawdadaeeewr werwerwerwerrrerereererrerewrdwawddwadwawd
     futil.log(f'{CMD_NAME} Command Execute Event')
 
     inputs = args.command.commandInputs

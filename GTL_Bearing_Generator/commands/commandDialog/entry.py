@@ -7,9 +7,9 @@ ui = app.userInterface
 
 
 # TODO *** Specify the command identity information. ***
-CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_cmdDialog'
-CMD_NAME = 'Command Dialog Sample'
-CMD_Description = 'A Fusion Add-in Command with a dialog'
+CMD_ID = f'{config.COMPANY_NAME}_{config.ADDIN_NAME}_bearing_generator'  # Unique ID for the command. This is used to reference the command and must be unique across all commands.
+CMD_NAME = 'GTL Bearing Generator'                                  #Nombre de la caja de dialogo
+CMD_Description = 'Generates a bearing based on the parameters provided by the user.'  # Description of the command that will be shown as a tooltip.
 
 # Specify that the command will be promoted to the panel.
 IS_PROMOTED = True
@@ -81,12 +81,21 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     # TODO Define the dialog for your command by adding different inputs to the command.
 
     # Create a simple text box input.
-    inputs.addTextBoxCommandInput('text_box', 'Some Text', 'Enter some text.', 1, False)
+    inputs.addTextBoxCommandInput('NombreRodamiento', 'Some Text', 'Rodamiento_x', 1, False) # id, name, default value, number of rows, is read only
 
     # Create a value input field and set the default using 1 unit of the default length unit.
-    defaultLengthUnits = app.activeProduct.unitsManager.defaultLengthUnits
+    defaultLengthUnits = app.activeProduct.unitsManager.defaultLengthUnits  
     default_value = adsk.core.ValueInput.createByString('1')
     inputs.addValueInput('value_input', 'Some Value', defaultLengthUnits, default_value)
+    inputs.addValueInput('value_input2', 'Some Value2', defaultLengthUnits, default_value)    
+
+    #imagen
+    ruta_imagen = os.path.join(ICON_FOLDER, 'rodamiento.png')
+    inputs.addImageCommandInput(
+    'imagen',
+    'Imagen del rodamiento',
+    ruta_imagen
+)
 
     # TODO Connect to the events that are needed by this command.
     futil.add_handler(args.command.execute, command_execute, local_handlers=local_handlers)

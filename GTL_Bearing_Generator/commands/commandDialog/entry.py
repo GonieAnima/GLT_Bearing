@@ -2,6 +2,7 @@ import adsk.core
 import os
 from ...lib import fusionAddInUtils as futil
 from ... import config
+from .bearing import make_bearing
 app = adsk.core.Application.get()
 ui = app.userInterface
 
@@ -81,21 +82,38 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     # TODO Define the dialog for your command by adding different inputs to the command.
 
     # Create a simple text box input.
-    inputs.addTextBoxCommandInput('NombreRodamiento', 'Some Text', 'Rodamiento_x', 1, False) # id, name, default value, number of rows, is read only
+    inputs.addTextBoxCommandInput('NombreRodamiento', 'Name', 'Bearing_x', 1, False) # id, name, default value, number of rows, is read only
 
     # Create a value input field and set the default using 1 unit of the default length unit.
     defaultLengthUnits = app.activeProduct.unitsManager.defaultLengthUnits  
-    default_value = adsk.core.ValueInput.createByString('1')
-    inputs.addValueInput('value_input', 'Some Value', defaultLengthUnits, default_value)
-    inputs.addValueInput('value_input2', 'Some Value2', defaultLengthUnits, default_value)    
+    
+    # Default values
+    OuterDiameterOuterRing = adsk.core.ValueInput.createByString('30')
+    OuterRing_Width = adsk.core.ValueInput.createByString('5')
+    defaultODcorner = adsk.core.ValueInput.createByString('1')
+    default_height = adsk.core.ValueInput.createByString('10')
+    InnerRing_InnerDiameter = adsk.core.ValueInput.createByString('15')
+    InnerRing_Width = adsk.core.ValueInput.createByString('5')
+    defaultIRcorner = adsk.core.ValueInput.createByString('1')
+    
 
     #imagen
     ruta_imagen = os.path.join(ICON_FOLDER, 'rodamiento.png')
     inputs.addImageCommandInput(
-    'imagen',
-    'Imagen del rodamiento',
+    'Diagram',   # id
+    'Ex:',       # name on screen
     ruta_imagen
 )
+    # Pedir inputs de valor de rodamiento    
+    inputs.addValueInput('OuterDiameter_Outer_ID', 'Outer ring diameter', defaultLengthUnits, OuterDiameterOuterRing)
+    inputs.addValueInput('Width_Outer_ID', 'Outer ring width', defaultLengthUnits, OuterRing_Width)
+    inputs.addValueInput('ODcorner_Outer_ID', 'Outer ring corner radius', defaultLengthUnits, defaultODcorner)
+    inputs.addValueInput('Height', 'Height', defaultLengthUnits, default_height)
+    inputs.addValueInput('InnerDiameter_Inner_ID', 'Inner ring diameter', defaultLengthUnits, InnerRing_InnerDiameter)
+    inputs.addValueInput('Width_Inner_ID', 'Inner ring width', defaultLengthUnits, InnerRing_Width)
+    inputs.addValueInput('IRcorner_Inner_ID', 'Inner ring corner radius', defaultLengthUnits, defaultIRcorner)
+
+
 
     # TODO Connect to the events that are needed by this command.
     futil.add_handler(args.command.execute, command_execute, local_handlers=local_handlers)
@@ -113,17 +131,26 @@ def command_execute(args: adsk.core.CommandEventArgs):
 
     # TODO ******************************** Your code here ********************************
 
-    # Get a reference to your command's inputs.
-    inputs = args.command.commandInputs
-    text_box: adsk.core.TextBoxCommandInput = inputs.itemById('text_box')
-    value_input: adsk.core.ValueCommandInput = inputs.itemById('value_input')
+    app = adsk.core.Application.get()
+    ui = app.userInterface
 
-    # Do something interesting
-    text = text_box.text
-    expression = value_input.expression
-    msg = f'Your text: {text}<br>Your value: {expression}'
-    ui.messageBox(msg)
+    # Obtener el diseño actual
+    design = adsk.fusion.Design.cast(app.activeProduct)
 
+    if not design:
+        ui.messageBox('No active design')
+        return
+    
+############################## CREAR RODAMIENTO #####################################
+    make_bearing(
+        args.command.commandInputs.itemById('OuterDiameter_Outer_ID').value,
+        args.command.commandInputs.itemById('Width_Outer_ID').value,
+        args.command.commandInputs.itemById('Height').value,
+        args.command.commandInputs.itemById('ODcorner_Outer_ID').value,
+        args.command.commandInputs.itemById('InnerDiameter_Inner_ID').value,
+        args.command.commandInputs.itemById('Width_Inner_ID').value,
+        args.command.commandInputs.itemById('IRcorner_Inner_ID').value
+    )
 
 # This event handler is called when the command needs to compute a new preview in the graphics window.
 def command_preview(args: adsk.core.CommandEventArgs):
@@ -150,11 +177,10 @@ def command_validate_input(args: adsk.core.ValidateInputsEventArgs):
 
     inputs = args.inputs
     
-    # Verify the validity of the input values. This controls if the OK button is enabled or not.
-    valueInput = inputs.itemById('value_input')
-    if valueInput.value >= 0:
-        args.areInputsValid = True
-    else:
+    # Validate the inputs that exist in this dialog. The bearing name is text,
+    # so do not attempt to validate it as a numeric value.
+    name_input = inputs.itemById('NombreRodamiento')
+    if not name_input or not name_input.value.strip():
         args.areInputsValid = False
         
 

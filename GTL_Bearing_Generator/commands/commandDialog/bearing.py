@@ -1,7 +1,6 @@
 import adsk.core
 import adsk.fusion
 
-
 def make_bearing(OuterRing_OuterDiameter, OuterRing_Width, Height, ODcorner, InnerRing_InnerDiameter, InnerRing_Width, IRcorner):
 
     app = adsk.core.Application.get()

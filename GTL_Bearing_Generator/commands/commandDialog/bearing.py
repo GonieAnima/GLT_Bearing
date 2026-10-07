@@ -6,7 +6,7 @@ def make_bearing(OuterRing_OuterDiameter, OuterRing_Width, Height, ODcorner, Inn
     app = adsk.core.Application.get()
     ui = app.userInterface
     design = adsk.fusion.Design.cast(app.activeProduct)
-
+    
     if not design:
         return
 
@@ -131,34 +131,36 @@ def make_bearing(OuterRing_OuterDiameter, OuterRing_Width, Height, ODcorner, Inn
     extrude.bodies.item(0).name = 'Inner Ring Body'  # Nombre del cuerpo extruido
 
     # CHAMFER INNER RING
-    
     # Colección de todas las aristas
     chamferEdges = adsk.core.ObjectCollection.create()
-    
+
     body = extrude.bodies.item(0)
-    
+
     # Añadir TODAS las aristas del Inner Ring
     for i in range(body.edges.count):
         chamferEdges.add(body.edges.item(i))
-    
+
     # Crear el chaflán
     chamfers = aroInterior.features.chamferFeatures
-    
+
     chamferInput = chamfers.createInput2()
-    
+
     # Distancia del chaflán
     distance = adsk.core.ValueInput.createByReal(IRcorner)
-    
+
     chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
         chamferEdges,
         distance,
         False
     )
-    
+
     # Crear chaflán
     chamfer = chamfers.add(chamferInput)
-    
+
     if not chamfer:
         ui.messageBox('Fusion no ha podido crear el chaflán del Inner Ring')
     else:
         chamfer.name = 'Inner Ring Chamfer'
+
+    # Ya creado el rodamiento interno y externo
+    

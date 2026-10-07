@@ -94,7 +94,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     default_height = adsk.core.ValueInput.createByString('10')
     InnerRing_Bore = adsk.core.ValueInput.createByString('8')
     InnerRing_Width = adsk.core.ValueInput.createByString('3')
-    defaultIRcorner = adsk.core.ValueInput.createByString('1')
+    defaultIRcorner = adsk.core.ValueInput.createByString('0.5')
     
 
     #imagen

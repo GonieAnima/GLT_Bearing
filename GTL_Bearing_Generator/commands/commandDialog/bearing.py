@@ -1,7 +1,7 @@
 import adsk.core
 import adsk.fusion
 
-def make_bearing(OuterRing_OuterDiameter, OuterRing_Width, Height, ODcorner, InnerRing_InnerDiameter, InnerRing_Width, IRcorner):
+def make_bearing(OuterRing_OuterDiameter, OuterRing_Width, Height, ODcorner, InnerRing_Bore, InnerRing_Width, IRcorner):
 
     app = adsk.core.Application.get()
     ui = app.userInterface
@@ -108,16 +108,57 @@ def make_bearing(OuterRing_OuterDiameter, OuterRing_Width, Height, ODcorner, Inn
     sketchInterior.name = 'Inner Ring Sketch'
 
     #Crear circulo exterior
-    circles2 = sketchExterior.sketchCurves.sketchCircles     #Acceder a herramienta de circulos
+    circles2 = sketchInterior.sketchCurves.sketchCircles     #Acceder a herramienta de circulos
     
     #Dibujar circulo exterior
-    circuloExterior = circles2.addByCenterRadius(
+    circuloExteriorInner = circles2.addByCenterRadius(
         adsk.core.Point3D.create(0, 0, 0),  # Centro del circulo
-        InnerRing_InnerDiameter / 2                   # Radio del circulo
+        InnerRing_Bore / 2                   # Radio del circulo
     )
     #Dibujar circulo interior
-    circuloInterior = circles2.addByCenterRadius(
+    circuloInteriorInner = circles2.addByCenterRadius(
             adsk.core.Point3D.create(0, 0, 0),  # Centro del circulo
-            InnerRing_InnerDiameter / 2 - InnerRing_Width                   # Radio del circulo
+            InnerRing_Bore / 2 + InnerRing_Width                   # Radio del circulo
         )
     
+    # Extruir el aro interior
+    prof = sketchInterior.profiles.item(1)  # Obtener el perfil del sketch
+    extrudes = aroInterior.features.extrudeFeatures
+    extInput = extrudes.createInput(prof, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    distance = adsk.core.ValueInput.createByReal(Height)  # Distancia de extrusión
+    extInput.setDistanceExtent(False, distance)
+    extrude = extrudes.add(extInput)
+    extrude.bodies.item(0).name = 'Inner Ring Body'  # Nombre del cuerpo extruido
+
+    # CHAMFER INNER RING
+    
+    # Colección de todas las aristas
+    chamferEdges = adsk.core.ObjectCollection.create()
+    
+    body = extrude.bodies.item(0)
+    
+    # Añadir TODAS las aristas del Inner Ring
+    for i in range(body.edges.count):
+        chamferEdges.add(body.edges.item(i))
+    
+    # Crear el chaflán
+    chamfers = aroInterior.features.chamferFeatures
+    
+    chamferInput = chamfers.createInput2()
+    
+    # Distancia del chaflán
+    distance = adsk.core.ValueInput.createByReal(IRcorner)
+    
+    chamferInput.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
+        chamferEdges,
+        distance,
+        False
+    )
+    
+    # Crear chaflán
+    chamfer = chamfers.add(chamferInput)
+    
+    if not chamfer:
+        ui.messageBox('Fusion no ha podido crear el chaflán del Inner Ring')
+    else:
+        chamfer.name = 'Inner Ring Chamfer'

@@ -92,8 +92,8 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     OuterRing_Width = adsk.core.ValueInput.createByString('5')
     defaultODcorner = adsk.core.ValueInput.createByString('1')
     default_height = adsk.core.ValueInput.createByString('10')
-    InnerRing_InnerDiameter = adsk.core.ValueInput.createByString('15')
-    InnerRing_Width = adsk.core.ValueInput.createByString('5')
+    InnerRing_Bore = adsk.core.ValueInput.createByString('8')
+    InnerRing_Width = adsk.core.ValueInput.createByString('3')
     defaultIRcorner = adsk.core.ValueInput.createByString('1')
     
 
@@ -109,7 +109,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     inputs.addValueInput('Width_Outer_ID', 'Outer ring width', defaultLengthUnits, OuterRing_Width)
     inputs.addValueInput('ODcorner_Outer_ID', 'Outer ring corner radius', defaultLengthUnits, defaultODcorner)
     inputs.addValueInput('Height', 'Height', defaultLengthUnits, default_height)
-    inputs.addValueInput('InnerDiameter_Inner_ID', 'Inner ring diameter', defaultLengthUnits, InnerRing_InnerDiameter)
+    inputs.addValueInput('Bore_ID', 'Inner bore diameter', defaultLengthUnits, InnerRing_Bore)
     inputs.addValueInput('Width_Inner_ID', 'Inner ring width', defaultLengthUnits, InnerRing_Width)
     inputs.addValueInput('IRcorner_Inner_ID', 'Inner ring corner radius', defaultLengthUnits, defaultIRcorner)
 
@@ -147,7 +147,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
         args.command.commandInputs.itemById('Width_Outer_ID').value,
         args.command.commandInputs.itemById('Height').value,
         args.command.commandInputs.itemById('ODcorner_Outer_ID').value,
-        args.command.commandInputs.itemById('InnerDiameter_Inner_ID').value,
+        args.command.commandInputs.itemById('Bore_ID').value,
         args.command.commandInputs.itemById('Width_Inner_ID').value,
         args.command.commandInputs.itemById('IRcorner_Inner_ID').value
     )
